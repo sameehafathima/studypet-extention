@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bubble Pop! 🫧 — StudyPet Break Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:'Nunito',sans-serif;}
+body{background:linear-gradient(135deg,#fdf2f8 0%,#fce7f3 50%,#fbcfe8 100%);color:#9d174d;}
+.hud{position:fixed;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;z-index:5;}
+.chip{background:white;border:2px solid #f9a8d4;border-radius:14px;padding:8px 14px;font-weight:900;font-size:14px;box-shadow:0 4px 12px rgba(236,72,153,0.2);}
+#stage{position:absolute;inset:0;}
+.bubble{position:absolute;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,0.85),#fbcfe8 70%,#ec4899);box-shadow:0 4px 16px rgba(236,72,153,0.35);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:#9d174d;font-weight:900;user-select:none;transition:transform 0.08s;}
+.bubble:hover{transform:scale(1.08);}
+.bubble.golden{background:radial-gradient(circle at 30% 30%,#fff7c2,#fde047 70%,#ca8a04);color:#713f12;box-shadow:0 4px 16px rgba(250,204,21,0.55);}
+.bubble.bad{background:radial-gradient(circle at 30% 30%,rgba(255,255,255,0.6),#cbd5e1 70%,#334155);color:#0f172a;}
+.pop{position:absolute;pointer-events:none;font-size:22px;font-weight:900;color:#be185d;animation:pop 0.6s ease-out forwards;}
+@keyframes pop{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-40px) scale(1.6);opacity:0}}
+
+.overlay{position:fixed;inset:0;background:rgba(253,242,248,0.95);display:flex;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(6px);}
+.card{background:white;border:3px solid #f9a8d4;border-radius:28px;padding:32px 30px;max-width:420px;text-align:center;box-shadow:0 20px 60px rgba(236,72,153,0.25);}
+h1{font-size:32px;font-weight:900;color:#be185d;margin-bottom:6px;}
+.sub{font-size:14px;color:#9d174d;font-weight:700;margin-bottom:18px;line-height:1.5;}
+.btn{background:linear-gradient(135deg,#ec4899,#be185d);color:white;border:none;border-radius:16px;padding:14px 28px;font-family:inherit;font-weight:900;font-size:16px;cursor:pointer;box-shadow:0 6px 20px rgba(236,72,153,0.4);transition:transform 0.15s;}
+.btn:hover{transform:translateY(-2px);}
+.btn-ghost{background:#fce7f3;color:#be185d;border:2px solid #f9a8d4;margin-left:8px;}
+.final-stats{display:flex;gap:16px;justify-content:center;margin:16px 0;}
+.stat{background:#fce7f3;border-radius:14px;padding:10px 16px;}
+.stat-n{font-size:22px;font-weight:900;color:#ec4899;}
+.stat-l{font-size:10px;font-weight:800;color:#f472b6;text-transform:uppercase;letter-spacing:1px;}
+.pet{font-size:60px;margin-bottom:8px;}
+</style>
+</head>
+<body>
+<div class="hud">
+  <div class="chip" data-testid="game-score">Score: <span id="score">0</span></div>
+  <div class="chip" data-testid="game-time">Time: <span id="time">30</span>s</div>
+  <div class="chip" data-testid="game-combo">Combo: <span id="combo">0</span>x</div>
+</div>
+<div id="stage"></div>
+
+<div class="overlay" id="start-overlay">
+  <div class="card">
+    <div class="pet">🫧</div>
+    <h1>Bubble Pop!</h1>
+    <div class="sub">Pop pink bubbles for points. Golden ones = +5 & combo boost.<br>Avoid the grey ones — they break your combo!<br>You have <b>30 seconds</b>. Go!</div>
+    <button class="btn" id="start-btn" data-testid="start-btn">Start Game 🚀</button>
+  </div>
+</div>
+
+<div class="overlay" id="end-overlay" style="display:none;">
+  <div class="card">
+    <div class="pet">🌸</div>
+    <h1 id="end-title">Nice one!</h1>
+    <div class="sub" id="end-sub">Great break — Mochi cheered you on!</div>
+    <div class="final-stats">
+      <div class="stat"><div class="stat-n" id="final-score">0</div><div class="stat-l">Score</div></div>
+      <div class="stat"><div class="stat-n" id="final-best">0</div><div class="stat-l">Best</div></div>
+      <div class="stat"><div class="stat-n" id="final-combo">0x</div><div class="stat-l">Max combo</div></div>
+    </div>
+    <button class="btn" id="retry-btn" data-testid="retry-btn">Play again 🔁</button>
+    <button class="btn btn-ghost" id="close-btn" data-testid="close-btn">Back to studying</button>
+  </div>
+</div>
+
+<script src="minigame.js"></script>
+</body>
+</html>

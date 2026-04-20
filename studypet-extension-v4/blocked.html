@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Blocked by StudyPet 🌸</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(160deg, #fdf2f8 0%, #fce7f3 50%, #fbcfe8 100%);
+    font-family: 'Nunito', sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    color: #9d174d;
+  }
+  .card {
+    background: white;
+    border: 3px solid #f9a8d4;
+    border-radius: 28px;
+    padding: 40px 32px;
+    max-width: 460px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(236,72,153,0.25);
+    text-align: center;
+  }
+  .pet { width: 160px; height: 160px; margin: 0 auto 8px; animation: sway 3s ease-in-out infinite; }
+  @keyframes sway {
+    0%,100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(4px) rotate(3deg); }
+  }
+  h1 { font-size: 28px; font-weight: 900; color: #be185d; margin-bottom: 8px; }
+  .site { background: #fce7f3; padding: 4px 12px; border-radius: 20px; font-weight: 800; display: inline-block; margin-top: 6px; font-size: 13px; color: #db2777; }
+  p { font-size: 15px; font-weight: 600; color: #9d174d; margin: 16px 0; line-height: 1.5; }
+  .row { display: flex; gap: 10px; margin-top: 20px; }
+  button, a.btn {
+    flex: 1; padding: 14px; border-radius: 14px; border: none;
+    font-family: inherit; font-weight: 900; font-size: 14px;
+    cursor: pointer; text-decoration: none; display: flex;
+    align-items: center; justify-content: center;
+    transition: transform 0.15s ease;
+  }
+  .primary { background: linear-gradient(135deg,#ec4899,#be185d); color: white; box-shadow: 0 6px 20px rgba(236,72,153,0.4); }
+  .ghost   { background: #fce7f3; color: #be185d; border: 2px solid #f9a8d4; }
+  button:hover, a.btn:hover { transform: translateY(-2px); }
+  .quote { margin-top: 22px; font-size: 12px; color: #db2777; font-weight: 700; font-style: italic; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <svg class="pet" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="50" cy="95" rx="28" ry="6" fill="#f9a8d4" opacity="0.3"/>
+      <ellipse cx="50" cy="68" rx="25" ry="22" fill="#fce7f3"/>
+      <ellipse cx="50" cy="42" rx="28" ry="25" fill="#fce7f3"/>
+      <ellipse cx="25" cy="22" rx="10" ry="14" fill="#fce7f3" transform="rotate(-15,25,22)"/>
+      <ellipse cx="25" cy="22" rx="6" ry="9" fill="#f9a8d4" transform="rotate(-15,25,22)" opacity="0.7"/>
+      <ellipse cx="75" cy="22" rx="10" ry="14" fill="#fce7f3" transform="rotate(15,75,22)"/>
+      <ellipse cx="75" cy="22" rx="6" ry="9" fill="#f9a8d4" transform="rotate(15,75,22)" opacity="0.7"/>
+      <ellipse cx="38" cy="50" rx="5" ry="4" fill="#9d174d" opacity="0.8"/>
+      <ellipse cx="62" cy="50" rx="5" ry="4" fill="#9d174d" opacity="0.8"/>
+      <path d="M 32 40 Q 38 36 44 40" stroke="#9d174d" stroke-width="1.8" fill="none"/>
+      <path d="M 56 40 Q 62 36 68 40" stroke="#9d174d" stroke-width="1.8" fill="none"/>
+      <ellipse cx="50" cy="58" rx="4" ry="2.5" fill="#f9a8d4"/>
+      <path d="M 38 66 Q 50 60 62 66" stroke="#9d174d" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="30" cy="58" r="1.5" fill="#60a5fa" opacity="0.8"/>
+      <circle cx="28" cy="62" r="1" fill="#60a5fa" opacity="0.6"/>
+      <ellipse cx="34" cy="88" rx="11" ry="7" fill="#fbcfe8"/>
+      <ellipse cx="66" cy="88" rx="11" ry="7" fill="#fbcfe8"/>
+    </svg>
+    <h1>Mochi is sad...</h1>
+    <div class="site" id="site-name">—</div>
+    <p>You're in a focus session, and this site is on your blocklist.<br>Come back when you're done studying — your pet believes in you!</p>
+    <div class="row">
+      <button class="ghost"  id="back-btn">← Go Back</button>
+      <button class="primary" id="stop-btn">Stop Focus Session</button>
+    </div>
+    <div class="quote">"Discipline is choosing between what you want now and what you want most." 🌸</div>
+  </div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  document.getElementById('site-name').textContent = params.get('site') || 'blocked site';
+  document.getElementById('back-btn').onclick = () => history.length > 1 ? history.back() : chrome.tabs?.remove?.();
+  document.getElementById('stop-btn').onclick = () => {
+    chrome.runtime.sendMessage({ type: 'STOP_FOCUS' }, () => {
+      location.href = 'https://www.google.com';
+    });
+  };
+</script>
+</body>
+</html>

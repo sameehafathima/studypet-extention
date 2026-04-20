@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>StudyPet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pink-50:#fdf2f8;--pink-100:#fce7f3;--pink-200:#fbcfe8;--pink-300:#f9a8d4;
+  --pink-400:#f472b6;--pink-500:#ec4899;--pink-600:#db2777;--pink-700:#be185d;
+  --pink-800:#9d174d;--pink-900:#831843;--white:#ffffff;
+  --bg1:#fdf2f8;--bg2:#fce7f3;--bg3:#fbcfe8;
+  --card:#ffffff;--text:#9d174d;--text-mute:#f472b6;--border:#fbcfe8;
+  --shadow:0 4px 20px rgba(236,72,153,0.18);
+}
+body.dark{
+  --bg1:#1a0f1f;--bg2:#2a1533;--bg3:#3a1d42;
+  --card:#2a1533;--text:#fbcfe8;--text-mute:#c4b5cc;--border:#4a2955;
+  --shadow:0 4px 20px rgba(0,0,0,0.45);
+}
+html{font-size:14px}
+body{
+  width:360px;min-height:580px;
+  background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 50%,var(--bg3) 100%);
+  font-family:'Nunito',sans-serif;color:var(--text);overflow-x:hidden;
+}
+.header{
+  background:linear-gradient(135deg,var(--pink-500) 0%,var(--pink-700) 100%);
+  padding:14px 16px 10px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 4px 16px rgba(236,72,153,0.35);position:relative;overflow:hidden;
+}
+.header::before{content:'';position:absolute;top:-30px;right:-20px;width:80px;height:80px;background:rgba(255,255,255,0.1);border-radius:50%}
+.header-pet svg{width:52px;height:52px;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.15))}
+.header-info{flex:1}
+.header-title{font-size:18px;font-weight:900;color:white;letter-spacing:-0.3px;line-height:1}
+.header-sub{font-size:11px;color:rgba(255,255,255,0.85);font-weight:600;margin-top:2px}
+.level-badge{background:rgba(255,255,255,0.25);border:2px solid rgba(255,255,255,0.4);color:white;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:0.5px}
+.xp-bar-wrap{background:linear-gradient(135deg,var(--pink-600),var(--pink-500));padding:8px 16px 10px}
+.xp-label{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.85);font-weight:700;margin-bottom:4px}
+.xp-track{background:rgba(255,255,255,0.25);border-radius:10px;height:8px;overflow:hidden}
+.xp-fill{background:linear-gradient(90deg,#fce7f3,white);height:100%;border-radius:10px;transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 0 8px rgba(255,255,255,0.6)}
+.tabs{display:flex;background:var(--bg2);border-bottom:2px solid var(--border);padding:0 4px;gap:0;overflow-x:auto}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{flex:1;min-width:50px;padding:9px 3px 7px;background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:8px;font-weight:800;color:var(--text-mute);text-align:center;letter-spacing:0.3px;text-transform:uppercase;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s ease}
+.tab-btn.active{color:var(--pink-600);border-bottom-color:var(--pink-500)}
+body.dark .tab-btn.active{color:var(--pink-300);border-bottom-color:var(--pink-300)}
+.tab-btn:hover{color:var(--pink-600)}
+.tab-icon{display:block;font-size:15px;margin-bottom:1px}
+.panel{display:none;padding:14px 14px 16px}
+.panel.active{display:block}
+
+/* Pet stage */
+.pet-stage{background:var(--card);border-radius:20px;padding:14px;text-align:center;box-shadow:var(--shadow);margin-bottom:10px;border:2px solid var(--border);position:relative;overflow:hidden}
+.pet-name-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:6px}
+.pet-name{font-size:16px;font-weight:900;color:var(--pink-700)}
+body.dark .pet-name{color:var(--pink-300)}
+.pet-mood-chip{background:var(--bg2);border:1.5px solid var(--border);color:var(--pink-600);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+body.dark .pet-mood-chip{color:var(--pink-300)}
+#main-pet-svg{width:96px;height:96px}
+.pet-speech{background:var(--bg1);border:2px solid var(--border);border-radius:14px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--pink-700);margin-top:6px;min-height:30px;display:flex;align-items:center;justify-content:center}
+body.dark .pet-speech{color:var(--pink-200)}
+.pet-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.pet-btn{background:linear-gradient(135deg,var(--pink-400),var(--pink-500));color:white;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;padding:9px 8px;border-radius:12px;transition:all 0.2s ease;box-shadow:0 3px 10px rgba(236,72,153,0.3)}
+.pet-btn:hover{transform:translateY(-2px)}
+.pet-btn:active{transform:scale(0.96)}
+.pet-btn.secondary{background:linear-gradient(135deg,var(--pink-200),var(--pink-300));color:var(--pink-800)}
+body.dark .pet-btn.secondary{background:linear-gradient(135deg,#4a2955,#6d3d7a);color:var(--pink-200)}
+
+/* Daily goal ring */
+.goal-card{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:10px 12px;margin-top:10px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px}
+.goal-ring{width:54px;height:54px;position:relative;flex-shrink:0}
+.goal-ring svg{transform:rotate(-90deg)}
+.goal-ring .track{fill:none;stroke:var(--border);stroke-width:6}
+.goal-ring .prog{fill:none;stroke:var(--pink-500);stroke-width:6;stroke-linecap:round;stroke-dasharray:138;stroke-dashoffset:138;transition:stroke-dashoffset 0.6s ease}
+.goal-ring-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--pink-700)}
+body.dark .goal-ring-txt{color:var(--pink-300)}
+.goal-info{flex:1}
+.goal-label{font-size:10px;font-weight:800;color:var(--text-mute);text-transform:uppercase;letter-spacing:0.5px}
+.goal-val{font-size:14px;font-weight:900;color:var(--pink-700);margin-top:2px}
+body.dark .goal-val{color:var(--pink-200)}
+
+.stats-strip{display:flex;gap:8px;margin-top:10px}
+.stat-card{flex:1;background:var(--card);border-radius:12px;padding:8px 6px;text-align:center;border:2px solid var(--border);box-shadow:var(--shadow)}
+.stat-num{font-size:16px;font-weight:900;color:var(--pink-600);line-height:1}
+body.dark .stat-num{color:var(--pink-300)}
+.stat-label{font-size:8px;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:0.5px;margin-top:3px}
+
+/* Timer */
+.timer-modes{display:flex;gap:6px;margin-bottom:12px}
+.mode-btn{flex:1;padding:7px 4px;background:var(--card);border:2px solid var(--border);border-radius:10px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;color:var(--text-mute);text-align:center}
+.mode-btn.active{background:var(--pink-500);border-color:var(--pink-500);color:white;box-shadow:0 3px 10px rgba(236,72,153,0.35)}
+.mode-min{font-size:14px;display:block;font-weight:900}
+.timer-ring-wrap{display:flex;justify-content:center;margin-bottom:12px}
+.timer-ring{position:relative;width:140px;height:140px}
+.timer-ring svg{transform:rotate(-90deg)}
+.timer-ring circle.track{fill:none;stroke:var(--border);stroke-width:10}
+.timer-ring circle.progress{fill:none;stroke:var(--pink-500);stroke-width:10;stroke-linecap:round;stroke-dasharray:408;stroke-dashoffset:408;transition:stroke-dashoffset 1s linear;filter:drop-shadow(0 0 6px rgba(236,72,153,0.5))}
+.timer-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.timer-display{font-size:30px;font-weight:900;color:var(--pink-700);letter-spacing:-1px;line-height:1}
+body.dark .timer-display{color:var(--pink-200)}
+.timer-status{font-size:10px;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:0.5px}
+.timer-controls{display:flex;gap:8px}
+.timer-btn{flex:1;padding:11px;border:none;border-radius:14px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px;font-weight:900}
+.timer-btn.primary{background:linear-gradient(135deg,var(--pink-500),var(--pink-700));color:white;box-shadow:0 4px 16px rgba(236,72,153,0.4)}
+.timer-btn.ghost{background:var(--card);color:var(--pink-600);border:2px solid var(--border)}
+
+/* Ambient sounds row */
+.sound-row{display:flex;gap:4px;margin-top:10px;flex-wrap:wrap}
+.sound-chip{flex:1;min-width:60px;padding:7px 4px;background:var(--card);border:2px solid var(--border);border-radius:10px;font-size:10px;font-weight:800;color:var(--text-mute);cursor:pointer;text-align:center}
+.sound-chip.active{background:var(--pink-500);color:white;border-color:var(--pink-500)}
+
+.ai-status-bar{background:var(--card);border:2px solid var(--border);border-radius:12px;padding:8px 10px;margin-top:10px;display:flex;align-items:center;gap:8px}
+.ai-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;box-shadow:0 0 6px rgba(34,197,94,0.6);animation:pulse-dot 2s ease-in-out infinite}
+.ai-dot.warn{background:#f97316}.ai-dot.danger{background:#ef4444}
+@keyframes pulse-dot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:0.7}}
+.ai-text{font-size:11px;font-weight:700;color:var(--pink-600);flex:1}
+body.dark .ai-text{color:var(--pink-300)}
+.ai-sub{font-size:9px;color:var(--text-mute);font-weight:600}
+
+/* Tasks */
+.task-input-row{display:flex;gap:7px;margin-bottom:12px}
+.task-input,.txt-input{flex:1;padding:9px 12px;border:2px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;color:var(--text);background:var(--card);outline:none}
+.task-input:focus,.txt-input:focus{border-color:var(--pink-500)}
+.add-btn{background:linear-gradient(135deg,var(--pink-500),var(--pink-700));color:white;border:none;border-radius:12px;width:38px;cursor:pointer;font-size:18px;font-weight:900;box-shadow:0 3px 10px rgba(236,72,153,0.35)}
+.tasks-list,.blocklist-items{display:flex;flex-direction:column;gap:6px;max-height:240px;overflow-y:auto}
+.task-item,.bl-item{display:flex;align-items:center;gap:9px;background:var(--card);border:2px solid var(--border);border-radius:12px;padding:8px 10px;box-shadow:var(--shadow)}
+.task-item.done{opacity:0.6}.task-item.done .task-text{text-decoration:line-through;color:var(--text-mute)}
+.task-check{width:20px;height:20px;border-radius:50%;border:2.5px solid var(--pink-400);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.task-check.checked{background:linear-gradient(135deg,var(--pink-400),var(--pink-600));border-color:transparent}
+.task-check.checked::after{content:'✓';color:white;font-size:11px;font-weight:900}
+.task-text,.bl-text{flex:1;font-size:12px;font-weight:700;color:var(--pink-700)}
+body.dark .task-text,body.dark .bl-text{color:var(--pink-200)}
+.task-del,.bl-del{background:none;border:none;cursor:pointer;color:var(--pink-300);font-size:14px;padding:2px 4px}
+.task-del:hover,.bl-del:hover{color:var(--pink-500)}
+.empty-tasks{text-align:center;padding:20px 0;color:var(--text-mute);font-size:12px;font-weight:700}
+
+/* Badges */
+.badges-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.badge-card{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:12px 6px;text-align:center;box-shadow:var(--shadow)}
+.badge-card.locked{opacity:0.45;filter:grayscale(0.5)}
+.badge-card.unlocked{border-color:var(--pink-400);box-shadow:0 4px 16px rgba(236,72,153,0.25)}
+.badge-icon{font-size:26px;display:block;margin-bottom:4px}
+.badge-name{font-size:9px;font-weight:800;color:var(--pink-600)}
+body.dark .badge-name{color:var(--pink-300)}
+.badge-desc{font-size:8px;color:var(--text-mute);font-weight:600;margin-top:2px}
+
+/* Stats panel / chart */
+.chart-wrap{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px 10px 10px;box-shadow:var(--shadow)}
+.chart-title{font-size:11px;font-weight:900;color:var(--pink-700);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;text-align:center}
+body.dark .chart-title{color:var(--pink-300)}
+.bars{display:flex;align-items:flex-end;justify-content:space-between;height:110px;gap:4px;padding:0 4px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%}
+.bar{width:100%;background:linear-gradient(180deg,var(--pink-400),var(--pink-600));border-radius:6px 6px 0 0;min-height:2px;transition:height 0.6s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 2px 6px rgba(236,72,153,0.3)}
+.bar.today{background:linear-gradient(180deg,#fbbf24,var(--pink-500))}
+.bar-lbl{font-size:9px;font-weight:800;color:var(--text-mute);text-transform:uppercase}
+.bar-val{font-size:9px;font-weight:900;color:var(--pink-600)}
+body.dark .bar-val{color:var(--pink-300)}
+
+/* Settings */
+.setting-row{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:2px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:8px;box-shadow:var(--shadow)}
+.setting-lbl{font-size:12px;font-weight:800;color:var(--pink-700)}
+body.dark .setting-lbl{color:var(--pink-200)}
+.setting-sub{font-size:9px;color:var(--text-mute);font-weight:600;margin-top:2px}
+.setting-row .right{display:flex;align-items:center;gap:8px}
+.switch{position:relative;width:38px;height:20px;background:var(--border);border-radius:20px;cursor:pointer;transition:background 0.2s}
+.switch.on{background:var(--pink-500)}
+.switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:white;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+.switch.on::after{transform:translateX(18px)}
+.num-input{width:56px;padding:4px 6px;text-align:center;border:2px solid var(--border);border-radius:8px;font-family:inherit;font-weight:800;font-size:12px;background:var(--bg1);color:var(--text);outline:none}
+.num-input:focus{border-color:var(--pink-500)}
+.name-input{flex:1;padding:6px 10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:12px;font-weight:700;background:var(--bg1);color:var(--text);outline:none}
+.btn-row{display:flex;gap:8px;margin-top:4px}
+.btn-sm{flex:1;padding:9px;font-size:11px;font-weight:800;border:2px solid var(--border);background:var(--card);color:var(--pink-700);border-radius:10px;cursor:pointer}
+body.dark .btn-sm{color:var(--pink-200)}
+.btn-sm.primary{background:linear-gradient(135deg,var(--pink-500),var(--pink-700));color:white;border:none}
+
+/* Leaderboard */
+.leaderboard-list{display:flex;flex-direction:column;gap:6px}
+.lb-item{display:flex;align-items:center;gap:10px;background:var(--card);border:2px solid var(--border);border-radius:12px;padding:8px 12px;box-shadow:var(--shadow)}
+.lb-item.me{border-color:var(--pink-400);background:linear-gradient(135deg,var(--card),var(--bg1))}
+.lb-rank{font-size:14px;font-weight:900;color:var(--text-mute);width:24px;text-align:center}
+.lb-rank.gold{color:#f59e0b}.lb-rank.silver{color:#94a3b8}.lb-rank.bronze{color:#c2804a}
+.lb-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--pink-300),var(--pink-500));display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.lb-name{flex:1;font-size:12px;font-weight:800;color:var(--pink-700)}
+body.dark .lb-name{color:var(--pink-200)}
+.lb-hours{font-size:11px;font-weight:900;color:var(--pink-500)}
+
+.section-label{font-size:10px;font-weight:900;color:var(--pink-500);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;margin-top:12px;display:flex;align-items:center;gap:6px}
+.section-label:first-child{margin-top:0}
+.section-label::after{content:'';flex:1;height:1.5px;background:var(--border);border-radius:2px}
+body.dark .section-label{color:var(--pink-300)}
+
+.pet-anim-idle{animation:main-idle 2s ease-in-out infinite}
+.pet-anim-cycling{animation:main-cycle 0.7s ease-in-out infinite}
+.pet-anim-running{animation:main-run 0.4s ease-in-out infinite}
+.pet-anim-celebrating{animation:main-celebrate 0.5s ease-in-out infinite}
+.pet-anim-sad{animation:main-sad 2.5s ease-in-out infinite}
+.pet-anim-sleeping{animation:main-sleep 3s ease-in-out infinite}
+.pet-anim-excited{animation:main-excited 0.35s ease-in-out infinite}
+@keyframes main-idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes main-cycle{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-7px) rotate(3deg)}}
+@keyframes main-run{0%,100%{transform:translateY(0) scaleX(1)}50%{transform:translateY(-9px) scaleX(0.95)}}
+@keyframes main-celebrate{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-14px) rotate(-10deg)}75%{transform:translateY(-14px) rotate(10deg)}}
+@keyframes main-sad{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(4px) rotate(-6deg)}}
+@keyframes main-sleep{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(5px) rotate(2deg)}}
+@keyframes main-excited{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(-5px) rotate(-6deg)}75%{transform:translateX(5px) rotate(6deg)}}
+
+.xp-pop{position:absolute;top:-24px;left:50%;transform:translateX(-50%);background:var(--pink-500);color:white;font-size:11px;font-weight:900;padding:3px 8px;border-radius:20px;animation:xp-float 1.5s ease forwards;pointer-events:none;white-space:nowrap;box-shadow:0 2px 8px rgba(236,72,153,0.4)}
+@keyframes xp-float{0%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-30px)}}
+
+textarea.txt-input{resize:vertical;min-height:80px;line-height:1.5}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-pet">
+    <svg id="header-pet" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="26" cy="22" rx="15" ry="13" fill="#fce7f3"/>
+      <ellipse cx="14" cy="12" rx="5" ry="7" fill="#fce7f3" transform="rotate(-15,14,12)"/>
+      <ellipse cx="14" cy="12" rx="3" ry="4" fill="#f9a8d4" transform="rotate(-15,14,12)"/>
+      <ellipse cx="38" cy="12" rx="5" ry="7" fill="#fce7f3" transform="rotate(15,38,12)"/>
+      <ellipse cx="38" cy="12" rx="3" ry="4" fill="#f9a8d4" transform="rotate(15,38,12)"/>
+      <ellipse cx="26" cy="36" rx="13" ry="11" fill="#fce7f3"/>
+      <ellipse cx="20" cy="20" rx="4" ry="4.5" fill="#9d174d" opacity="0.8"/>
+      <ellipse cx="32" cy="20" rx="4" ry="4.5" fill="#9d174d" opacity="0.8"/>
+      <path d="M 18 28 Q 26 33 34 28" stroke="#9d174d" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="26" cy="27" rx="2.5" ry="1.5" fill="#f9a8d4"/>
+    </svg>
+  </div>
+  <div class="header-info">
+    <div class="header-title" id="header-title">StudyPet 🌸</div>
+    <div class="header-sub" id="header-sub">Ready to study!</div>
+  </div>
+  <div class="level-badge" id="level-badge">Lv.1</div>
+</div>
+
+<div class="xp-bar-wrap">
+  <div class="xp-label"><span>XP Progress</span><span id="xp-text">0 / 100 XP</span></div>
+  <div class="xp-track"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="pet"><span class="tab-icon">🐾</span>Pet</button>
+  <button class="tab-btn" data-tab="timer"><span class="tab-icon">⏱</span>Timer</button>
+  <button class="tab-btn" data-tab="tasks"><span class="tab-icon">✅</span>Tasks</button>
+  <button class="tab-btn" data-tab="stats"><span class="tab-icon">📊</span>Stats</button>
+  <button class="tab-btn" data-tab="badges"><span class="tab-icon">🏆</span>Badges</button>
+  <button class="tab-btn" data-tab="settings"><span class="tab-icon">⚙️</span>Set</button>
+</div>
+
+<!-- PET -->
+<div class="panel active" id="panel-pet">
+  <div class="pet-stage">
+    <div class="pet-name-row">
+      <div class="pet-name" id="pet-name">Mochi</div>
+      <div class="pet-mood-chip" id="pet-mood-chip">😊 Happy</div>
+    </div>
+    <div class="main-pet-svg-wrap" id="main-pet-wrap" style="position:relative;display:inline-block">
+      <svg id="main-pet-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="pet-anim-idle">
+        <ellipse cx="50" cy="95" rx="28" ry="6" fill="#f9a8d4" opacity="0.3"/>
+        <ellipse cx="50" cy="68" rx="25" ry="22" fill="#fce7f3"/>
+        <ellipse cx="50" cy="42" rx="28" ry="25" fill="#fce7f3"/>
+        <ellipse cx="25" cy="22" rx="10" ry="14" fill="#fce7f3" transform="rotate(-15,25,22)"/>
+        <ellipse cx="25" cy="22" rx="6" ry="9" fill="#f9a8d4" transform="rotate(-15,25,22)" opacity="0.7"/>
+        <ellipse cx="75" cy="22" rx="10" ry="14" fill="#fce7f3" transform="rotate(15,75,22)"/>
+        <ellipse cx="75" cy="22" rx="6" ry="9" fill="#f9a8d4" transform="rotate(15,75,22)" opacity="0.7"/>
+        <ellipse cx="75" cy="72" rx="12" ry="9" fill="#fbcfe8" transform="rotate(20,75,72)"/>
+        <ellipse id="eye-l" cx="38" cy="48" rx="7" ry="8" fill="#9d174d" opacity="0.85"/>
+        <ellipse id="eye-r" cx="62" cy="48" rx="7" ry="8" fill="#9d174d" opacity="0.85"/>
+        <ellipse cx="50" cy="58" rx="4" ry="2.5" fill="#f9a8d4"/>
+        <path id="mouth" d="M 36 64 Q 50 72 64 64" stroke="#9d174d" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <ellipse cx="34" cy="88" rx="11" ry="7" fill="#fbcfe8"/>
+        <ellipse cx="66" cy="88" rx="11" ry="7" fill="#fbcfe8"/>
+      </svg>
+    </div>
+    <div class="pet-speech" id="main-speech">I'm ready to study with you! 🌸</div>
+  </div>
+
+  <div class="pet-actions">
+    <button class="pet-btn" data-act="pat">🤗 Pat</button>
+    <button class="pet-btn" data-act="feed">🍓 Feed</button>
+    <button class="pet-btn secondary" data-act="play">🎾 Play</button>
+    <button class="pet-btn secondary" data-act="squeeze">🤏 Squeeze</button>
+  </div>
+
+  <div class="goal-card">
+    <div class="goal-ring">
+      <svg width="54" height="54" viewBox="0 0 54 54">
+        <circle class="track" cx="27" cy="27" r="22"/>
+        <circle class="prog" id="goal-ring-prog" cx="27" cy="27" r="22"/>
+      </svg>
+      <div class="goal-ring-txt" id="goal-ring-pct">0%</div>
+    </div>
+    <div class="goal-info">
+      <div class="goal-label">Today's Goal</div>
+      <div class="goal-val" id="goal-val">0 / 120 min</div>
+    </div>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat-card"><div class="stat-num" id="stat-hours">0h</div><div class="stat-label">Total</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-streak">0🔥</div><div class="stat-label">Streak</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-tasks">0</div><div class="stat-label">Done</div></div>
+  </div>
+</div>
+
+<!-- TIMER -->
+<div class="panel" id="panel-timer">
+  <div class="timer-modes">
+    <button class="mode-btn active" id="mode-focus" data-mode="focus"><span class="mode-min" id="mode-focus-min">25</span>Focus</button>
+    <button class="mode-btn" id="mode-short" data-mode="short"><span class="mode-min" id="mode-short-min">5</span>Short</button>
+    <button class="mode-btn" id="mode-long" data-mode="long"><span class="mode-min" id="mode-long-min">15</span>Long</button>
+  </div>
+  <div class="timer-ring-wrap">
+    <div class="timer-ring">
+      <svg width="140" height="140" viewBox="0 0 150 150">
+        <circle class="track" cx="75" cy="75" r="65"/>
+        <circle class="progress" id="timer-progress" cx="75" cy="75" r="65"/>
+      </svg>
+      <div class="timer-center">
+        <div class="timer-display" id="timer-display">25:00</div>
+        <div class="timer-status" id="timer-status">Ready</div>
+      </div>
+    </div>
+  </div>
+  <div class="timer-controls">
+    <button class="timer-btn primary" id="timer-start-btn">▶ Start Focus</button>
+    <button class="timer-btn ghost" id="timer-reset-btn">↺ Reset</button>
+  </div>
+
+  <div class="section-label">Ambient Sound</div>
+  <div class="sound-row">
+    <div class="sound-chip active" data-sound="off">Off</div>
+    <div class="sound-chip" data-sound="brown">Brown</div>
+    <div class="sound-chip" data-sound="pink">Pink</div>
+    <div class="sound-chip" data-sound="white">White</div>
+    <div class="sound-chip" data-sound="rain">Rain</div>
+  </div>
+
+  <div class="ai-status-bar">
+    <div class="ai-dot" id="ai-dot"></div>
+    <div style="flex:1">
+      <div class="ai-text" id="ai-text">Tab monitoring ready</div>
+      <div class="ai-sub" id="ai-sub">Start a session to activate</div>
+    </div>
+    <div style="font-size:18px" id="ai-pet-icon">🐾</div>
+  </div>
+
+  <div class="section-label">Focus Notes</div>
+  <textarea class="txt-input" id="notes" placeholder="Jot down thoughts during your session..."></textarea>
+</div>
+
+<!-- TASKS -->
+<div class="panel" id="panel-tasks">
+  <div class="section-label">Add Task</div>
+  <div class="task-input-row">
+    <input class="task-input" id="task-input" placeholder="What do you need to do? 🌸" maxlength="80"/>
+    <button class="add-btn" id="task-add-btn">+</button>
+  </div>
+  <div class="section-label">My Tasks</div>
+  <div class="tasks-list" id="tasks-list">
+    <div class="empty-tasks" id="empty-tasks">No tasks yet! Add one above 🌸</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="panel" id="panel-stats">
+  <div class="section-label">Last 7 Days</div>
+  <div class="chart-wrap">
+    <div class="chart-title" id="chart-total">Total: 0 min</div>
+    <div class="bars" id="bars"></div>
+  </div>
+
+  <div class="section-label">Totals</div>
+  <div class="stats-strip">
+    <div class="stat-card"><div class="stat-num" id="stat2-hours">0h</div><div class="stat-label">Total</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat2-sessions">0</div><div class="stat-label">Sessions</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat2-streak">0🔥</div><div class="stat-label">Streak</div></div>
+  </div>
+
+  <div class="section-label">Weekly Ranking</div>
+  <div class="leaderboard-list" id="lb-list"></div>
+</div>
+
+<!-- BADGES -->
+<div class="panel" id="panel-badges">
+  <div class="section-label">Achievements</div>
+  <div class="badges-grid" id="badges-grid"></div>
+</div>
+
+<!-- SETTINGS -->
+<div class="panel" id="panel-settings">
+  <div class="section-label">Pet</div>
+  <div class="setting-row">
+    <div><div class="setting-lbl">Pet Name</div><div class="setting-sub">Your companion's name</div></div>
+    <div class="right"><input class="name-input" id="pet-name-input" maxlength="14"/></div>
+  </div>
+  <div class="setting-row">
+    <div><div class="setting-lbl">Hide on webpages</div><div class="setting-sub">Toggle the floating pet</div></div>
+    <div class="right"><div class="switch" id="sw-hide"></div></div>
+  </div>
+  <div class="setting-row">
+    <div><div class="setting-lbl">Dark Mode</div><div class="setting-sub">Switch theme</div></div>
+    <div class="right"><div class="switch" id="sw-dark"></div></div>
+  </div>
+
+  <div class="section-label">Timer</div>
+  <div class="setting-row">
+    <div><div class="setting-lbl">Focus (min)</div></div>
+    <div class="right"><input class="num-input" id="in-focus" type="number" min="1" max="120"/></div>
+  </div>
+  <div class="setting-row">
+    <div><div class="setting-lbl">Short Break (min)</div></div>
+    <div class="right"><input class="num-input" id="in-short" type="number" min="1" max="60"/></div>
+  </div>
+  <div class="setting-row">
+    <div><div class="setting-lbl">Long Break (min)</div></div>
+    <div class="right"><input class="num-input" id="in-long" type="number" min="1" max="120"/></div>
+  </div>
+  <div class="setting-row">
+    <div><div class="setting-lbl">Daily Goal (min)</div><div class="setting-sub">Target per day</div></div>
+    <div class="right"><input class="num-input" id="in-goal" type="number" min="10" max="600"/></div>
+  </div>
+  <div class="setting-row">
+    <div><div class="setting-lbl">Auto-start breaks</div><div class="setting-sub">Begin break automatically</div></div>
+    <div class="right"><div class="switch" id="sw-auto"></div></div>
+  </div>
+
+  <div class="section-label">Site Blocker</div>
+  <div class="setting-row">
+    <div><div class="setting-lbl">Enable Blocking</div><div class="setting-sub">Redirect distraction sites during focus</div></div>
+    <div class="right"><div class="switch" id="sw-block"></div></div>
+  </div>
+  <div class="task-input-row">
+    <input class="task-input" id="bl-input" placeholder="e.g. youtube.com" maxlength="80"/>
+    <button class="add-btn" id="bl-add-btn">+</button>
+  </div>
+  <div class="blocklist-items" id="blocklist-items"></div>
+
+  <div class="section-label">Data</div>
+  <div class="btn-row">
+    <button class="btn-sm" id="btn-export">⬇ Export</button>
+    <button class="btn-sm" id="btn-import">⬆ Import</button>
+    <button class="btn-sm primary" id="btn-reset">Reset</button>
+  </div>
+  <input type="file" id="import-file" accept=".json" style="display:none"/>
+
+  <div style="text-align:center;margin-top:14px;font-size:10px;font-weight:700;color:var(--text-mute)">StudyPet v2.0 🌸 Made with love</div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
